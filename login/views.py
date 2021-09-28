@@ -5,16 +5,31 @@ from .models import Account
 from .serializers import AccountSerializer
 from rest_framework.parsers import JSONParser
 
+import hashlib
+
 def show(request):
     query_set = Account.objects.all()
     serializer = AccountSerializer(query_set,many=True)
     #query_set = Account.objects.delete
     return JsonResponse(serializer.data, safe=False)
 
+def login(request):
+     if request.method == 'POST':
 
-def register(requst):
+        data = JSONParser().parse(request)
+        obj = Account.objects.get(id=data['id'])
+        password = data['password']
+        encrypt = hashlib.sha256(password.encode()).hexdigest()
+        if encrypt == obj.password:
+            return JsonResponse(status=200)
+        else:
+            return JsonResponse(status=400)
+
+def register(request):
     #여기서 비밀번호 암호화 진행
     """"""
+    data = JSONParser().parse(request)
+    return JsonResponse(data)
     serializer = AccountSerializer(data={"id":"user",
     "pw":"12345",
     "company":"123456",

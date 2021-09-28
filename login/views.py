@@ -9,10 +9,12 @@ from django.views.decorators.csrf import csrf_exempt
 import hashlib
 
 def show(request):
-    query_set = Account.objects.all()
+    query_set = Account.objects.filter(status=False,company="123123")
     serializer = AccountSerializer(query_set,many=True)
     #query_set = Account.objects.delete
     return JsonResponse(serializer.data, safe=False)
+
+    
 
 def login(request):
      if request.method == 'POST':
@@ -25,7 +27,6 @@ def login(request):
             return JsonResponse(status=200)
         else:
             return JsonResponse(status=400)
-
 
 @csrf_exempt
 def register(request):

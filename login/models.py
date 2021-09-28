@@ -6,6 +6,7 @@ class Account(models.Model):
     company = models.CharField(max_length=6)
     phone = models.CharField(max_length=11)
     name = models.CharField(max_length=5)
-    type = models.IntegerField()
+    type = models.IntegerField() #계정 타입, 회원, 유저 등
+    status = models.BooleanField(default=False) #회원가입 여부
 
 

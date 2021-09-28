@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import Account
 from .serializers import AccountSerializer
 from rest_framework.parsers import JSONParser
+from django.views.decorators.csrf import csrf_exempt
 
 import hashlib
 
@@ -25,24 +26,24 @@ def login(request):
         else:
             return JsonResponse(status=400)
 
+
+@csrf_exempt
 def register(request):
     #여기서 비밀번호 암호화 진행
     """"""
-    data = JSONParser().parse(request)
-    return JsonResponse(data)
-    serializer = AccountSerializer(data={"id":"user",
-    "pw":"12345",
-    "company":"123456",
-    "phone":"01012345678",
-    "name":"엄준식",
-    "type":1})
-    if serializer.is_valid():
-        serializer.save()
-        #ok status 전송
-        return JsonResponse(serializer.data, status=201)
-    else:
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        password = data['password']
+        encrypt = hashlib.sha256(password.encode()).hexdigest()
+        data['password'] = encrypt
+        serializer = AccountSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            #ok status 전송
+            return JsonResponse(serializer.data, status=201)
+        else:
 
-        return JsonResponse(serializer.errors, status=400)
+            return JsonResponse(serializer.errors, status=400)
 
 def accept(request): #로그인 승인 ,Account 에 대해 필드 값 변경
     

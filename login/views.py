@@ -33,9 +33,12 @@ def login(request):
 @csrf_exempt
 def register(request):
     #여기서 비밀번호 암호화 진행
+    #return JsonResponse({"status":True}, status=200)
     """"""
     if request.method == 'POST':
-        data = JSONParser().parse(request)
+        print(request)
+        data = JSONParser().parse(request)['nameValuePairs']
+
         password = data['password']
         encrypt = hashlib.sha256(password.encode()).hexdigest()
         data['password'] = encrypt
@@ -45,7 +48,8 @@ def register(request):
             #ok status 전송
             return JsonResponse({"status":True}, status=200)
         else:
-            return JsonResponse(serializer.errors, status=400)
+            print(serializer.errors)
+            return JsonResponse({"status":False}, status=200)
 
 @csrf_exempt
 def accept(request): #로그인 승인 ,Account 에 대해 필드 값 변경

@@ -52,7 +52,7 @@ def accept(request): #로그인 승인 ,Account 에 대해 필드 값 변경
     if request.method == 'POST':
         data = JSONParser().parse(request)
         company = data['company']
-        query = Account.objects.filter(status=False)
+        query = Account.objects.filter(company=company,status=False)
 
         serializer = AccountSerializer(query,many=True)
         return JsonResponse(serializer.data,safe=False)

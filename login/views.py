@@ -10,6 +10,7 @@ import hashlib
 
 def show(request):
     query_set = Account.objects.filter(status=False,company="123123")
+    query_set = Account.objects.all()
     serializer = AccountSerializer(query_set,many=True)
     #query_set = Account.objects.delete
     return JsonResponse(serializer.data, safe=False)
@@ -48,6 +49,7 @@ def register(request):
             #ok status 전송
             return JsonResponse({"status":True}, status=200)
         else:
+            print(data)
             print(serializer.errors)
             return JsonResponse({"status":False}, status=200)
 

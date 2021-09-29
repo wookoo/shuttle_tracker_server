@@ -15,18 +15,20 @@ def show(request):
     return JsonResponse(serializer.data, safe=False)
 
     
-
+@csrf_exempt
 def login(request):
      if request.method == 'POST':
-
-        data = JSONParser().parse(request)
-        obj = Account.objects.get(id=data['id'])
-        password = data['password']
-        encrypt = hashlib.sha256(password.encode()).hexdigest()
-        if encrypt == obj.password:
-            return JsonResponse(status=200)
-        else:
-            return JsonResponse(status=400)
+        try:
+            data = JSONParser().parse(request)
+            obj = Account.objects.get(id=data['id'])
+            password = data['password']
+            encrypt = hashlib.sha256(password.encode()).hexdigest()
+            serializer = AccountSerializer(obj)
+            if encrypt == obj.password: #클라이언트에게 던져줄거정의
+                return JsonResponse(serializer.data,status=200)
+        except:
+            pass
+        return JsonResponse({"status":False},status=400)
 
 @csrf_exempt
 def register(request):
@@ -41,15 +43,37 @@ def register(request):
         if serializer.is_valid():
             serializer.save()
             #ok status 전송
-            return JsonResponse(serializer.data, status=201)
+            return JsonResponse({"status":True}, status=200)
         else:
-
             return JsonResponse(serializer.errors, status=400)
 
+@csrf_exempt
 def accept(request): #로그인 승인 ,Account 에 대해 필드 값 변경
-    
-    query = Account.objects.get(id="user")
-    query.pw ="4567" #비밀번호 업데이트
-    query.save()
-    serializer = AccountSerializer(query)
-    return JsonResponse(serializer.data)
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        company = data['company']
+        query = Account.objects.filter(status=False)
+
+        serializer = AccountSerializer(query,many=True)
+        return JsonResponse(serializer.data,safe=False)
+
+@csrf_exempt
+def resetPW(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        name = data['name']
+        phone = data['phone']
+        id = data['id']
+        query = Account.objects.get(id=id,name=name,phone=phone)
+        password = data['password']
+        encrypt = hashlib.sha256(password.encode()).hexdigest()
+        query.password = encrypt
+        query.save()
+        serializers = AccountSerializer(query)
+        return JsonResponse(serializers.data)
+
+@csrf_exempt
+def leave(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        

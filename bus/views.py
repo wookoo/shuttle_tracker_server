@@ -6,17 +6,23 @@ from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 
 
+lat = 36.76105
+lon = 126.91408
 
 @csrf_exempt
 def gps_download(request):
     print("call download")
-    return JsonResponse({"status":True})
+    return JsonResponse({"status":True,"lat":lat, "lon":lon})
 
 @csrf_exempt
 def gps_upload(request):
     data = JSONParser().parse(request)
     print("call upload")
-    print(data)
+    data = data['nameValuePairs']
+    global lat 
+    lat = data['lat']
+    global lon
+    lon = data['lon']
     return JsonResponse({"status":True})
 
 @csrf_exempt

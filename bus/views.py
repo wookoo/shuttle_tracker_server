@@ -9,6 +9,14 @@ from django.views.decorators.csrf import csrf_exempt
 lat = 36.76105
 lon = 126.91408
 
+tag_dict = {
+   "dae9bd80":"이승아",
+    "cc1ca216":"신준용",
+    "9adbb880":"이찬호",
+    "fc7f2d23":"민세리",
+    "dc1b7022":"이인구"
+}
+
 @csrf_exempt
 def gps_download(request):
     print("call download")
@@ -29,19 +37,27 @@ def gps_upload(request):
 def ride_upload(request):
     data = JSONParser().parse(request)["nameValuePairs"]
     tag = data['tag']
-    if(tag == "dae9bd80"):
-        tag = "이승아"
-    elif(tag == "cc1ca216"):
-        tag = "신준용"
-    elif(tag == "9adbb880"):
-        tag ="이찬호"
-    elif(tag == "fc7f2d23"):
-        tag="민세리"
-    elif(tag == "dc1b7022"):
-        tag = "이인구"
-    #if(name == "dae9bd80"):
-    #    name = "이승아"
+    tag = tag_dict[tag]
+
     print("call ride upload")
     print(data)
-    return JsonResponse({"status":True,"name":tag,"method":data["method"]})
+    return JsonResponse({"status":True,"name":tag,"info":data["info"]})
+
+
+
+@csrf_exempt
+def check(request):
+    data = JSONParser().parse(request)["nameValuePairs"]
+    tags = data['tags']
+    tags = tags.rstrip(",").split(",")
+    print(tags)
+    print(data)
+    remain = ""
+    for i in tags:
+        if(i):
+            remain += tag_dict[i] +","
+    remain = remain.rstrip(",")
+    print(remain)
+    return JsonResponse({"status":True,"tags":remain,"remain":data["remain"]})
+
 # Create your views here.

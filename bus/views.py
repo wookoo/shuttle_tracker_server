@@ -39,8 +39,8 @@ def ride_upload(request):
     tag = data['tag']
     tag = tag_dict[tag]
 
-    print("call ride upload")
-    print(data)
+    #print("call ride upload")
+    #print(data)
     return JsonResponse({"status":True,"name":tag,"info":data["info"]})
 
 
@@ -50,14 +50,14 @@ def check(request):
     data = JSONParser().parse(request)["nameValuePairs"]
     tags = data['tags']
     tags = tags.rstrip(",").split(",")
-    print(tags)
-    print(data)
+    #print(tags)
+    #print(data)
     remain = ""
     for i in tags:
         if(i):
             remain += tag_dict[i] +","
     remain = remain.rstrip(",")
-    print(remain)
+    #print(remain)
     return JsonResponse({"status":True,"tags":remain,"remain":data["remain"]})
 
 # Create your views here.

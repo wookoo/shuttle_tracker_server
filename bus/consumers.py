@@ -7,9 +7,13 @@ tag_dict = {
     "cc1ca216":"신준용",
     "9adbb880":"이찬호",
     "fc7f2d23":"민세리",
-    "dc1b7022":"이인구"
+    "dc1b7022":"이인구",
+    "a99a258d":"윤재욱",
+    "696bd8d" : "김기준",
+    "8953ca8e":"한정우",
+    "d9b1fb8d":"김도현",
 }
-onDrive = False;
+onDrive = False
 class ChatConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
@@ -30,6 +34,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         if(self.user == "provider"):
             onDrive = True
+         
+            
         if(onDrive):
             await self.channel_layer.group_send(
                     
@@ -75,24 +81,40 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        if("tag" in text_data_json.keys()):
-            text_data_json['tag'] = tag_dict[text_data_json['tag']]
-        
         print(text_data_json)
+        if("tag" in text_data_json.keys()):
+            try:
+                text_data_json['tag'] = tag_dict[text_data_json['tag']]
+                await self.channel_layer.group_send(
+            
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    "user": self.user,
+                    'message': text_data_json
+                }
+                
+            )
+                return
+            except:
+            
+                pass
+        else:
+            await self.channel_layer.group_send(
+            
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    "user": self.user,
+                    'message': text_data_json
+                }
+            )
+        
 
         
     
         print("call Here")
-        await self.channel_layer.group_send(
-            
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                "user": self.user,
-                'message': text_data_json
-            }
-        )
-
+        
     async def chat_message(self, event):
         message = event['message']
         user = event['user']

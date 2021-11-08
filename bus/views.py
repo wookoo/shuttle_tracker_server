@@ -14,7 +14,13 @@ tag_dict = {
     "cc1ca216":"신준용",
     "9adbb880":"이찬호",
     "fc7f2d23":"민세리",
-    "dc1b7022":"이인구"
+    "dc1b7022":"이인구",
+    "a99a258d":"윤재욱",
+    "696bd8d" : "김기준",
+    "8953ca8e":"한정우",
+    "d9b1fb8d":"김도현",
+
+
 }
 
 @csrf_exempt
@@ -37,7 +43,12 @@ def gps_upload(request):
 def ride_upload(request):
     data = JSONParser().parse(request)["nameValuePairs"]
     tag = data['tag']
-    tag = tag_dict[tag]
+    try:
+        tag = tag_dict[tag]
+    except:
+        return JsonResponse({"status":False,"name":tag,"info":"123"})
+
+    
 
     #print("call ride upload")
     #print(data)
